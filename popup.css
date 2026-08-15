@@ -1,0 +1,317 @@
+:root {
+  --bg-color: #0d1117;
+  --card-bg: rgba(22, 27, 34, 0.85);
+  --border-color: rgba(48, 54, 61, 0.8);
+  --accent-color: #ffa116; /* LeetCode orange */
+  --accent-glow: rgba(255, 161, 22, 0.25);
+  --green-color: #2cbb5d;
+  --green-glow: rgba(44, 187, 93, 0.2);
+  --yellow-color: #ffc01e;
+  --yellow-glow: rgba(255, 192, 30, 0.2);
+  --red-color: #ff375f;
+  --red-glow: rgba(255, 55, 95, 0.2);
+  --text-main: #f0f6fc;
+  --text-muted: #8b949e;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 340px;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  padding: 14px;
+  user-select: none;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #ffa116 0%, #ff6b00 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.title-group h1 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.1;
+}
+
+.subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-glow);
+  border: 1px solid rgba(44, 187, 93, 0.4);
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.status-badge .dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--green-color);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--green-color);
+}
+
+.status-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--green-color);
+}
+
+.divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 12px 0;
+}
+
+/* Problem & Submission Cards */
+.problem-card {
+  background: rgba(13, 17, 23, 0.6);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.problem-card:last-of-type {
+  margin-bottom: 0;
+}
+
+.problem-header, .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.diff-badge, .status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: capitalize;
+}
+
+.diff-easy, .status-accepted {
+  background: var(--green-glow);
+  color: var(--green-color);
+  border: 1px solid rgba(44, 187, 93, 0.3);
+}
+
+.diff-medium {
+  background: var(--yellow-glow);
+  color: var(--yellow-color);
+  border: 1px solid rgba(255, 192, 30, 0.3);
+}
+
+.diff-hard {
+  background: var(--red-glow);
+  color: var(--red-color);
+  border: 1px solid rgba(255, 55, 95, 0.3);
+}
+
+.diff-unknown, .status-none {
+  background: rgba(139, 148, 158, 0.15);
+  color: var(--text-muted);
+  border: 1px solid rgba(139, 148, 158, 0.3);
+}
+
+.problem-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.3;
+}
+
+.problem-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Settings Form Section */
+.settings-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.form-group label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.form-row {
+  display: flex;
+  gap: 8px;
+}
+
+input[type="text"], input[type="password"] {
+  width: 100%;
+  background: rgba(13, 17, 23, 0.8);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--text-main);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+  border-color: var(--accent-color);
+}
+
+.input-with-btn {
+  display: flex;
+  gap: 4px;
+}
+
+.btn-toggle {
+  background: rgba(13, 17, 23, 0.8);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-toggle:hover {
+  border-color: var(--text-muted);
+}
+
+.status-alert {
+  font-size: 11px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  line-height: 1.3;
+}
+
+.status-alert.hidden {
+  display: none;
+}
+
+.status-alert.success {
+  background: var(--green-glow);
+  color: var(--green-color);
+  border: 1px solid rgba(44, 187, 93, 0.4);
+}
+
+.status-alert.error {
+  background: var(--red-glow);
+  color: var(--red-color);
+  border: 1px solid rgba(255, 55, 95, 0.4);
+}
+
+.status-alert.info {
+  background: rgba(255, 161, 22, 0.15);
+  color: var(--accent-color);
+  border: 1px solid rgba(255, 161, 22, 0.3);
+}
+
+.btn-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ffa116 0%, #ff6b00 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #ffb340 0%, #ff7b1a 100%);
+}
+
+.btn-secondary {
+  background: rgba(33, 38, 45, 0.9);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: rgba(48, 54, 61, 0.9);
+}

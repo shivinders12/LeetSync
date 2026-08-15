@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Personal LeetHub</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="logo-area">
+        <div class="logo-icon">⚡</div>
+        <div class="title-group">
+          <h1>LeetHub</h1>
+          <span class="subtitle">Personal Sync</span>
+        </div>
+      </div>
+      <div class="status-badge" id="statusBadge">
+        <span class="dot"></span>
+        <span class="status-text">Active</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Active Problem Detection Card -->
+    <div class="problem-card" id="problemCard">
+      <div class="problem-header">
+        <span class="section-title">Detected Problem</span>
+        <span class="diff-badge diff-unknown" id="problemDiff">Checking...</span>
+      </div>
+      <div class="problem-title" id="problemTitle">Not on a LeetCode problem page</div>
+      <div class="problem-meta">
+        <span class="meta-item" id="problemNum">#--</span>
+        <span class="meta-item" id="problemLang">Lang: --</span>
+      </div>
+    </div>
+
+    <!-- Last Submission Card -->
+    <div class="problem-card submission-card" id="submissionCard">
+      <div class="problem-header">
+        <span class="section-title">Last Submission</span>
+        <span class="status-pill status-none" id="subStatusBadge">None</span>
+      </div>
+      <div class="problem-title" id="subProblemTitle">No accepted submission yet</div>
+      <div class="problem-meta">
+        <span class="meta-item" id="subTime">Time: --</span>
+        <span class="meta-item" id="subCodeLen">Code: 0 chars</span>
+      </div>
+    </div>
+
+    <!-- GitHub Sync Status Card -->
+    <div class="problem-card sync-card" id="syncCard">
+      <div class="problem-header">
+        <span class="section-title">GitHub Sync</span>
+        <span class="status-pill status-none" id="syncStatusBadge">Pending</span>
+      </div>
+      <div class="problem-title" id="syncPath">No GitHub sync performed yet</div>
+      <div class="problem-meta">
+        <span class="meta-item" id="syncMasterCsv">CSV: submissions.csv</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- GitHub Configuration Section -->
+    <div class="settings-card">
+      <div class="section-header">
+        <span class="section-title">GitHub Configuration</span>
+      </div>
+
+      <div class="form-group">
+        <label for="ghToken">Personal Access Token</label>
+        <div class="input-with-btn">
+          <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" />
+          <button type="button" class="btn-toggle" id="toggleTokenBtn">👁️</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="ghOwner">GitHub Username</label>
+          <input type="text" id="ghOwner" placeholder="username" />
+        </div>
+        <div class="form-group">
+          <label for="ghRepo">Repository</label>
+          <input type="text" id="ghRepo" placeholder="LeetCode" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="ghBranch">Branch</label>
+        <input type="text" id="ghBranch" placeholder="main" value="main" />
+      </div>
+
+      <div class="status-alert hidden" id="ghStatusMsg"></div>
+
+      <div class="btn-group">
+        <button class="btn btn-secondary" id="saveSettingsBtn">Save Settings</button>
+        <button class="btn btn-primary" id="testConnBtn">Test Connection</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
