@@ -64,13 +64,13 @@ Follow these steps to install **My Personal LeetHub** in Google Chrome:
 
 1. **Download / Clone this repository**:
    ```bash
-   git clone https://github.com/shivinders12/My-Personal-LeetHub.git
+   git clone https://github.com/shivinders12/LeetSync.git
    ```
 2. Open **Google Chrome**.
 3. Type `chrome://extensions` in the address bar and press **Enter**.
 4. In the top-right corner, turn **ON** the **Developer mode** toggle switch.
 5. In the top-left corner, click **Load unpacked**.
-6. Select the `My-Personal-LeetHub` folder.
+6. Select the `LeetSync` folder.
 7. Click **Select Folder**. The extension is now installed!
 
 ---
