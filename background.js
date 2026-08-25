@@ -255,6 +255,7 @@ async function updateRootReadme(token, owner, repo, branch, submissionData, csvC
 
   const lines = (csvContent || '').trim().split('\n');
   const problemsMap = new Map();
+  const submissionRecords = [];
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
@@ -267,34 +268,43 @@ async function updateRootReadme(token, owner, repo, branch, submissionData, csvC
       const diff = parts[2].replace(/"/g, '').trim();
       const lang = parts[3].replace(/"/g, '').trim();
       const url = parts[4].replace(/"/g, '').trim();
+      const ts = parts[5] ? parts[5].replace(/"/g, '').trim() : formatLocalTimestamp(Date.now());
 
       const numPadded = isNaN(parseInt(num, 10)) ? '0000' : String(num).padStart(4, '0');
       const slug = url.match(/\/problems\/([a-z0-9-]+)/i) ? url.match(/\/problems\/([a-z0-9-]+)/i)[1] : title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       const folderName = `${numPadded}-${slug}`;
 
-      problemsMap.set(numPadded, {
+      const problemObj = {
         number: numPadded,
         title: title,
         difficulty: diff,
         language: lang,
         url: url,
         folderName: folderName,
-        category: categorizeProblem(title, slug)
-      });
+        category: categorizeProblem(title, slug),
+        timestamp: ts
+      };
+
+      problemsMap.set(numPadded, problemObj);
+      submissionRecords.push(problemObj);
     }
   }
 
   const currentNumPadded = submissionData.number ? String(submissionData.number).padStart(4, '0') : '0000';
   const currentFolderName = getFolderName(submissionData);
-  problemsMap.set(currentNumPadded, {
+  const currentTs = formatLocalTimestamp(submissionData.timestamp || Date.now());
+  const currentProblemObj = {
     number: currentNumPadded,
     title: submissionData.title,
     difficulty: submissionData.difficulty,
     language: submissionData.language,
     url: submissionData.url,
     folderName: currentFolderName,
-    category: categorizeProblem(submissionData.title, submissionData.slug)
-  });
+    category: categorizeProblem(submissionData.title, submissionData.slug),
+    timestamp: currentTs
+  };
+  problemsMap.set(currentNumPadded, currentProblemObj);
+  submissionRecords.push(currentProblemObj);
 
   const allProblems = Array.from(problemsMap.values()).sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10));
 
@@ -318,6 +328,86 @@ async function updateRootReadme(token, owner, repo, branch, submissionData, csvC
   const mediumBar = renderProgressBar(mediumPct);
   const hardBar = renderProgressBar(hardPct);
 
+  // Calculate Last 10 Days Daily Average (questions done per day over last 10 calendar days)
+  const nowMs = submissionData.timestamp ? new Date(submissionData.timestamp).getTime() : Date.now();
+  const refDate = isNaN(nowMs) ? new Date() : new Date(nowMs);
+  const cutoffDate = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate() - 9, 0, 0, 0, 0);
+
+  const last10DaysSubmissions = [];
+  const activeDaysSet = new Set();
+
+  submissionRecords.forEach(p => {
+    let pDate = null;
+    if (p.timestamp) {
+      const isoLikeStr = p.timestamp.replace(' ', 'T');
+      pDate = new Date(isoLikeStr);
+    }
+    if (!pDate || isNaN(pDate.getTime())) {
+      pDate = new Date();
+    }
+
+    if (pDate >= cutoffDate) {
+      last10DaysSubmissions.push(p);
+      const dateKey = `${pDate.getFullYear()}-${String(pDate.getMonth() + 1).padStart(2, '0')}-${String(pDate.getDate()).padStart(2, '0')}`;
+      activeDaysSet.add(dateKey);
+    }
+  });
+
+  const total10DaysQuestions = last10DaysSubmissions.length;
+  const avgQuestionsPerDay = (total10DaysQuestions / 10).toFixed(2);
+  const activeDaysCount = activeDaysSet.size;
+  const activeDaysPct = (activeDaysCount / 10) * 100;
+  const activeDaysBar = renderProgressBar(activeDaysPct);
+
+  // Calculate Last 10 Submissions Statistics
+  const sortedRecords = submissionRecords.sort((a, b) => {
+    const timeA = new Date(a.timestamp).getTime() || 0;
+    const timeB = new Date(b.timestamp).getTime() || 0;
+    return timeA - timeB;
+  });
+
+  const recent10 = sortedRecords.slice(-10);
+  const recentCount = recent10.length;
+
+  let recentEasy = 0;
+  let recentMedium = 0;
+  let recentHard = 0;
+  let weightedScoreSum = 0;
+
+  recent10.forEach(p => {
+    const d = (p.difficulty || '').toLowerCase();
+    if (d === 'easy') {
+      recentEasy++;
+      weightedScoreSum += 1;
+    } else if (d === 'medium') {
+      recentMedium++;
+      weightedScoreSum += 2;
+    } else if (d === 'hard') {
+      recentHard++;
+      weightedScoreSum += 3;
+    } else {
+      weightedScoreSum += 1;
+    }
+  });
+
+  const avgDiffScoreVal = recentCount > 0 ? (weightedScoreSum / recentCount) : 0;
+  const avgDifficultyScore = avgDiffScoreVal.toFixed(2);
+
+  let diffBadge = '🟢 Easy Focus';
+  if (avgDiffScoreVal > 2.3) {
+    diffBadge = '🔴 Hard Master';
+  } else if (avgDiffScoreVal > 1.4) {
+    diffBadge = '🟡 Medium Challenge';
+  }
+
+  const recentEasyPct = recentCount > 0 ? ((recentEasy / recentCount) * 100).toFixed(1) : '0.0';
+  const recentMedPct = recentCount > 0 ? ((recentMedium / recentCount) * 100).toFixed(1) : '0.0';
+  const recentHardPct = recentCount > 0 ? ((recentHard / recentCount) * 100).toFixed(1) : '0.0';
+
+  const recentEasyBar = renderProgressBar(parseFloat(recentEasyPct));
+  const recentMedBar = renderProgressBar(parseFloat(recentMedPct));
+  const recentHardBar = renderProgressBar(parseFloat(recentHardPct));
+
   const tableRows = allProblems.map(p => {
     return `| ${p.number} | [${p.title}](${p.url}) | ${getDiffEmoji(p.difficulty)} | ${p.language} | ${p.category} | [\`${p.folderName}\`](./${p.folderName}/) |`;
   }).join('\n');
@@ -327,7 +417,7 @@ async function updateRootReadme(token, owner, repo, branch, submissionData, csvC
 <p align="center">
   <img src="https://img.shields.io/badge/LeetCode-Solutions-orange?style=for-the-badge&logo=leetcode&logoColor=white" />
   <img src="https://img.shields.io/badge/Total%20Solved-${totalCount}-brightgreen?style=for-the-badge&logo=github" />
-  <img src="https://img.shields.io/badge/Primary%20Language-C%2B%2B-blue?style=for-the-badge&logo=cplusplus" />
+  <img src="https://img.shields.io/badge/10--Day%20Avg-${avgQuestionsPerDay}%2Fday-blue?style=for-the-badge&logo=leetcode" />
   <img src="https://img.shields.io/badge/Sync-LeetSync-ff69b4?style=for-the-badge" />
 </p>
 
@@ -345,6 +435,23 @@ async function updateRootReadme(token, owner, repo, branch, submissionData, csvC
 | 🟡 **Medium** | **${mediumCount}** | ${mediumPct}% | \`${mediumBar}\` |
 | 🔴 **Hard** | **${hardCount}** | ${hardPct}% | \`${hardBar}\` |
 | 🏆 **Total** | **${totalCount}** | 100% | \`████████████████████\` |
+
+</div>
+
+---
+
+## ⚡ 10-Day Solving Performance & Daily Average
+
+<div align="center">
+
+| Metric | Value | Details & Breakdown |
+| :--- | :---: | :--- |
+| 📊 **10-Day Daily Average** | **${avgQuestionsPerDay} questions / day** | \`${total10DaysQuestions} questions solved in last 10 days\` |
+| 🔥 **Active Days (Last 10)** | **${activeDaysCount} / 10 days** (${activeDaysPct.toFixed(0)}%) | \`${activeDaysBar}\` |
+| 🎯 **Avg Difficulty Score** | **${avgDifficultyScore} / 3.00** | ${diffBadge} |
+| 🟢 **Easy (Recent)** | **${recentEasy}** (${recentEasyPct}%) | \`${recentEasyBar}\` |
+| 🟡 **Medium (Recent)** | **${recentMedium}** (${recentMedPct}%) | \`${recentMedBar}\` |
+| 🔴 **Hard (Recent)** | **${recentHard}** (${recentHardPct}%) | \`${recentHardBar}\` |
 
 </div>
 
